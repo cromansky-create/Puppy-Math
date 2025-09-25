@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Puppy Multiplication — Minimal Luxe Edition</title>
+  <meta name="description" content="Clean, minimalist multiplication practice with puppy rewards and curated manifest support." />
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            luxe: {
+              ink: '#0a0a0a',
+              graphite: '#1a1a1a',
+              fog: '#f5f5f5',
+              mist: '#e8e8e8',
+              accent: '#cf0a2c'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'ui-sans-serif', 'system-ui', 'Segoe UI', 'Roboto', 'Arial']
+          },
+          boxShadow: {
+            soft: '0 8px 24px rgba(0,0,0,0.12)',
+            inset: 'inset 0 1px 0 rgba(255,255,255,0.08)'
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root { --ink:#0a0a0a; --graphite:#1a1a1a; --fog:#f5f5f5; --mist:#e8e8e8; --accent:#cf0a2c; }
+    html, body { height: 100%; }
+    body {
+      background: linear-gradient(180deg, #111, #0b0b0b);
+      color: #fff;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 1.1rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      backdrop-filter: blur(6px);
+    }
+    .btn {
+      display:inline-flex; align-items:center; justify-content:center; gap:.5rem;
+      padding:.7rem 1.1rem; border-radius:.9rem; font-weight:800; letter-spacing:.2px;
+      background: #cf0a2c; color:#fff; border:1px solid rgba(255,255,255,0.12);
+      transition: transform .04s ease, filter .2s ease;
+    }
+    .btn:active { transform: translateY(1px) scale(0.99); }
+    .btn-secondary { background: rgba(255,255,255,0.06); color:#fff; }
+    .kbd {
+      user-select:none; display:inline-flex; align-items:center; justify-content:center;
+      border-radius:.8rem; border:1px solid rgba(255,255,255,0.18);
+      padding:.7rem 1rem; font-size:1.15rem; font-weight:800;
+      background: rgba(255,255,255,0.06); color:#fff;
+    }
+    .puppy-img {
+      width: 100%;
+      height: auto;
+      display: block;
+      background: #0e0e0e;
+      border-radius: .9rem;
+    }
+    .cover .puppy-img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+    }
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      max-height: 500px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+    .tile {
+      border-radius:.95rem;
+      padding:8px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.10);
+    }
+    .bar { height: 10px; width:100%; background: rgba(255,255,255,0.12); border-radius: 999px; overflow: hidden; }
+    .bar > div { height: 100%; width: 0%; background: linear-gradient(90deg, #cf0a2c, #ffffff); }
+  </style>
+</head>
+<body class="min-h-screen">
+  <header class="max-w-6xl mx-auto px-6 pt-8 pb-3">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-full grid place-items-center bg-white text-[var(--ink)] font-extrabold">🐾</div>
+        <div>
+          <h1 class="text-3xl font-extrabold tracking-tight">Puppy Multiplication</h1>
+          <p class="text-sm text-white/70 -mt-0.5">Minimal luxe • Clean lines • Focus-first</p>
+        </div>
+      </div>
+      <div class="hidden sm:flex items-center gap-2">
+        <span class="px-3 py-1.5 rounded-full text-xs font-bold border border-white/20">Focus</span>
+        <span class="px-3 py-1.5 rounded-full text-xs font-bold border border-white/20">Effort</span>
+        <span class="px-3 py-1.5 rounded-full text-xs font-bold border border-white/20">Kindness</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-6 pb-10">
+    <section class="card p-6 mb-6">
+      <div class="grid md:grid-cols-2 gap-6">
+        <div>
+          <h2 class="text-xl font-extrabold mb-2">Choose your practice</h2>
+          <p class="text-white/75 mb-3">Pick tables, then start. On each correct answer you’ll unlock a puppy photo. Images keep their natural shape—no cropping.</p>
+          <div id="tables" class="grid grid-cols-6 gap-2 mb-3"></div>
+          <div class="flex flex-wrap gap-2">
+            <button id="selectAll" class="btn-secondary btn">All 1–12</button>
+            <button id="clearAll" class="btn-secondary btn">Clear</button>
+            <button id="startBtn" class="btn">Start</button>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-sm font-bold uppercase tracking-wide text-white/70 mb-2">Photo fitting</h3>
+          <div class="flex items-center gap-2 mb-2">
+            <label class="flex items-center gap-2">
+              <input type="radio" name="fit" value="contain" checked>
+              <span>Contain (no cropping)</span>
+            </label>
+            <label class="flex items-center gap-2">
+              <input type="radio" name="fit" value="cover">
+              <span>Cover (fill &amp; crop)</span>
+            </label>
+          </div>
+          <p class="text-white/70 text-sm">Use <em>Contain</em> to always see the full puppy. Switch to <em>Cover</em> if you want a tighter, magazine-style crop.</p>
+          <div class="mt-4 text-white/70 text-sm">Make sure <code>puppy-image-manifest.json</code> is in the same folder as this page.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid lg:grid-cols-3 gap-6 items-start">
+      <div class="lg:col-span-2 card p-6">
+        <div class="flex justify-between items-center mb-4">
+          <div class="text-white/70 text-sm">Score <span class="text-white font-bold" id="score">0</span>/<span id="total">0</span></div>
+          <div class="bar w-1/2"><div id="prog"></div></div>
+        </div>
+
+        <div class="text-center">
+          <div class="text-white/60 text-sm" id="qlabel">What is</div>
+          <div id="q" class="text-5xl font-extrabold tracking-tight my-2">6 × 7 = ?</div>
+          <div class="flex items-center justify-center gap-2 mb-2">
+            <input id="ans" inputmode="numeric" class="kbd w-28 text-center" placeholder="?">
+            <button id="submit" class="btn">Submit</button>
+            <button id="skip" class="btn-secondary btn">Skip</button>
+          </div>
+          <div id="fb" class="min-h-[1.5rem] text-lg font-semibold"></div>
+
+          <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 mt-4">
+            <button class="kbd">7</button><button class="kbd">8</button><button class="kbd">9</button>
+            <button class="kbd">4</button><button class="kbd">5</button><button class="kbd">6</button>
+            <button class="kbd">1</button><button class="kbd">2</button><button class="kbd">3</button>
+            <button class="kbd">0</button><button class="kbd">⌫</button><button class="kbd">↵</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card p-6">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-lg font-extrabold">Puppy Gallery</h3>
+          <span class="px-3 py-1.5 rounded-full text-xs font-bold border border-white/20">New photo each correct</span>
+        </div>
+        <p class="text-white/70 text-sm mb-3">Images respect native dimensions. Switch fit mode above if you prefer a tighter crop.</p>
+        <div id="gallery" class="gallery"></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    let MANIFEST = [];
+    async function loadManifest(){
+      try {
+        const resp = await fetch('./puppy-image-manifest.json', {cache:'no-store'});
+        if (resp.ok) { MANIFEST = await resp.json(); console.log('Manifest loaded', MANIFEST.length); }
+        else { console.warn('Manifest not found'); }
+      } catch(e) { console.warn('Manifest load failed', e); }
+    }
+    loadManifest();
+
+    // Fit toggle
+    let fitMode = 'contain';
+    function setFitMode(mode){
+      fitMode = mode;
+      const gallery = document.getElementById('gallery');
+      if (fitMode === 'cover') gallery.classList.add('cover'); else gallery.classList.remove('cover');
+    }
+    document.querySelectorAll('input[name="fit"]').forEach(r=>{
+      r.addEventListener('change', ()=> setFitMode(r.value));
+    });
+    setFitMode('contain');
+
+    // Tables
+    const tablesWrap = document.getElementById('tables');
+    const selected = new Set();
+    for (let i=1;i<=12;i++){
+      const b = document.createElement('button');
+      b.textContent = i; b.className = 'kbd';
+      b.addEventListener('click', ()=>{
+        if (selected.has(i)) { selected.delete(i); b.style.outline='none'; }
+        else { selected.add(i); b.style.outline='2px solid var(--accent)'; }
+      });
+      tablesWrap.appendChild(b);
+    }
+    document.getElementById('selectAll').onclick = ()=>{
+      selected.clear(); for (let i=1;i<=12;i++) selected.add(i);
+      [...tablesWrap.children].forEach(btn => btn.style.outline='2px solid var(--accent)');
+    };
+    document.getElementById('clearAll').onclick = ()=>{
+      selected.clear(); [...tablesWrap.children].forEach(btn => btn.style.outline='none');
+    };
+
+    // Game state
+    const qEl = document.getElementById('q');
+    const ansEl = document.getElementById('ans');
+    const fb = document.getElementById('fb');
+    const prog = document.getElementById('prog');
+    const scoreEl = document.getElementById('score');
+    const totalEl = document.getElementById('total');
+    const gallery = document.getElementById('gallery');
+    const keypadButtons = document.querySelectorAll('.grid .kbd');
+
+    let questions = []; let cursor = 0; let score = 0;
+
+    function makePairs(tables){
+      const out = [];
+      for (const a of tables){ for (let b=1;b<=12;b++) out.push({a,b,ans:a*b}); }
+      return out;
+    }
+
+    function findImage(a,b){
+      const r = MANIFEST.find(x => Number(x.a)===a && Number(x.b)===b) ||
+                MANIFEST.find(x => Number(x.a)===b && Number(x.b)===a);
+      return r ? {url:r.image_url, label:r.label} : {url:'', label:''};
+    }
+
+    function addTile(src,label){
+      const tile = document.createElement('div'); tile.className = 'tile';
+      const img = document.createElement('img'); img.className = 'puppy-img';
+      img.alt = label || 'Puppy';
+      img.loading = 'lazy';
+      img.referrerPolicy = 'no-referrer';
+      img.src = src || 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?q=80&w=800&auto=format&fit=crop';
+      tile.appendChild(img);
+      gallery.prepend(tile);
+    }
+
+    function nextQ(){
+      if (cursor >= questions.length) { fb.textContent = 'All done — nice work!'; return; }
+      const q = questions[cursor];
+      qEl.textContent = `${q.a} × ${q.b} = ?`;
+      prog.style.width = Math.round(cursor/questions.length*100) + '%';
+      fb.textContent = '';
+      ansEl.value='';
+    }
+
+    function submit(){
+      const raw = ansEl.value.trim(); const val = Number(raw);
+      if (!raw || Number.isNaN(val)) { fb.textContent = 'Type a number'; return; }
+      const q = questions[cursor];
+      if (val === q.ans) {
+        score++; scoreEl.textContent = String(score);
+        const m = findImage(q.a, q.b);
+        addTile(m.url, m.label);
+        fb.textContent = 'Nice!';
+      } else {
+        fb.textContent = `Close! ${q.a} × ${q.b} = ${q.ans}.`;
+      }
+      cursor++; nextQ();
+    }
+
+    document.getElementById('submit').onclick = submit;
+    document.getElementById('skip').onclick = ()=>{ cursor++; nextQ(); };
+    ansEl.addEventListener('keydown', (e)=>{ if (e.key==='Enter') submit(); });
+
+    keypadButtons.forEach(btn => {
+      btn.addEventListener('click', ()=>{
+        const t = btn.textContent;
+        if (t === '⌫') ansEl.value = ansEl.value.slice(0, -1);
+        else if (t === '↵') submit();
+        else ansEl.value += t;
+        ansEl.focus();
+      });
+    });
+
+    document.getElementById('startBtn').onclick = ()=>{
+      if (selected.size === 0) { alert('Pick at least one table.'); return; }
+      questions = makePairs([...selected]);
+      questions.sort(()=>Math.random()-0.5);
+      cursor = 0; score = 0; scoreEl.textContent = '0'; totalEl.textContent = String(questions.length);
+      gallery.innerHTML = '';
+      nextQ(); ansEl.focus();
+    };
+  </script>
+</body>
+</html>
